@@ -1,4 +1,10 @@
 import {BoardDimensions, Coordinate, Direction} from "./types"
+import winston, {Logger, transports} from "winston"
+
+const logger: Logger = winston.createLogger({
+    level: "info",
+    transports: new transports.Console()
+})
 
 export const nextPosition =
     (position: Coordinate, direction: Direction): Coordinate => {
@@ -17,7 +23,7 @@ export const nextPosition =
     }
 
 export const isValidPosition =
-    (boardDimensions: BoardDimensions, position: Coordinate) =>
+    (boardDimensions: BoardDimensions) => (position: Coordinate): boolean =>
         position.x >= 0 && position.y >= 0 && position.x < boardDimensions.width && position.y < boardDimensions.height
 
 export const parseDirections = (input: string): Direction[] => {
@@ -41,23 +47,36 @@ export const parseDirections = (input: string): Direction[] => {
 export const parseDirection = (input: string): Direction | undefined =>
     Object.values(Direction).find(value => value === input)
 
-const move = (startingPosition: Coordinate, boardDimensions: BoardDimensions, directions: Direction[]): Coordinate =>
-    directions.reduce(
+const move = (startingPosition: Coordinate, positionValidator: (position: Coordinate) => boolean, directions: Direction[]): Coordinate => {
+    const position: Coordinate = directions.reduce(
         (position, direction) => {
             const next: Coordinate = nextPosition(position, direction)
 
-            if (isValidPosition(boardDimensions, next)) {
+            if (positionValidator(next)) {
                 return next
             } else {
+                logger.warn(`Unable to move ${direction} from x=${position.x}, y=${position.y}. Ignoring direction`)
+
                 return position
             }
         },
         startingPosition
     )
 
-const start = (startingPosition: Coordinate, boardDimensions: BoardDimensions, inputDirections: string) => {
-    const directions: Direction[] = parseDirections(inputDirections)
+    return position
+}
 
-    const finalPosition = move(startingPosition, boardDimensions, directions)
+const start = (startingPosition: Coordinate, boardDimensions: BoardDimensions, inputDirections: string): Coordinate | undefined => {
+    try {
+        const directions: Direction[] = parseDirections(inputDirections)
 
+        logger.debug(`Input directions: ${directions.join(", ")}`)
+
+        const positionValidator: (position: Coordinate) => boolean = isValidPosition(boardDimensions)
+        const finalPosition: Coordinate = move(startingPosition, positionValidator, directions)
+        return finalPosition
+    } catch (error) {
+        logger.error(error)
+        return undefined
+    }
 }

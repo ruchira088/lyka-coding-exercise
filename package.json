@@ -7,7 +7,7 @@
     "test": "jest",
     "start": "tsx src/index.ts"
   },
-  "author": "",
+  "author": "Ruchira (Richie) Jayasekara",
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^29.5.12",
@@ -16,5 +16,8 @@
     "ts-jest": "^29.1.2",
     "tsx": "^4.7.2",
     "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "winston": "^3.13.0"
   }
 }

@@ -35,14 +35,15 @@ describe("Parsing string of directions", () => {
 
 test("Should return whether the position is valid on the board", () => {
     const boardDimensions: BoardDimensions = {height: 10, width: 10}
+    const isValid = isValidPosition(boardDimensions)
 
-    expect(isValidPosition(boardDimensions, {x: 1, y: 0})).toBeTruthy()
-    expect(isValidPosition(boardDimensions, {x: 0, y: 1})).toBeTruthy()
-    expect(isValidPosition(boardDimensions, {x: 9, y: 0})).toBeTruthy()
-    expect(isValidPosition(boardDimensions, {x: 0, y: 9})).toBeTruthy()
+    expect(isValid({x: 1, y: 0})).toBeTruthy()
+    expect(isValid({x: 0, y: 1})).toBeTruthy()
+    expect(isValid({x: 9, y: 0})).toBeTruthy()
+    expect(isValid({x: 0, y: 9})).toBeTruthy()
 
-    expect(isValidPosition(boardDimensions, {x: 0, y: 10})).toBeFalsy()
-    expect(isValidPosition(boardDimensions, {x: 10, y: 0})).toBeFalsy()
-    expect(isValidPosition(boardDimensions, {x: 0, y: -1})).toBeFalsy()
-    expect(isValidPosition(boardDimensions, {x: -1, y: 0})).toBeFalsy()
+    expect(isValid({x: 0, y: 10})).toBeFalsy()
+    expect(isValid({x: 10, y: 0})).toBeFalsy()
+    expect(isValid({x: 0, y: -1})).toBeFalsy()
+    expect(isValid({x: -1, y: 0})).toBeFalsy()
 })
