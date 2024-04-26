@@ -11,7 +11,7 @@ export interface Coordinate {
     readonly y: number
 }
 
-export interface BoardDimensions {
+export interface WarehouseDimensions {
     readonly height: number
     readonly width: number
 }

@@ -1,5 +1,5 @@
 import {isValidPosition, nextPosition, parseDirection, parseDirections} from "./index"
-import {BoardDimensions, Coordinate, Direction} from "./types"
+import {WarehouseDimensions, Coordinate, Direction} from "./types"
 
 test("Should go to the expected next position", () => {
     const position: Coordinate = {x: 0, y: 0}
@@ -34,7 +34,7 @@ describe("Parsing string of directions", () => {
 })
 
 test("Should return whether the position is valid on the board", () => {
-    const boardDimensions: BoardDimensions = {height: 10, width: 10}
+    const boardDimensions: WarehouseDimensions = {height: 10, width: 10}
     const isValid = isValidPosition(boardDimensions)
 
     expect(isValid({x: 1, y: 0})).toBeTruthy()
