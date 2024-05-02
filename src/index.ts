@@ -1,7 +1,6 @@
 import winston, {Logger, transports} from "winston"
-import fs from "fs"
-import path from "path"
-import {promisify} from "util"
+import fs from "node:fs/promises"
+import path from "node:path"
 import {Coordinate, Direction, WarehouseDimensions} from "./types"
 
 const logger: Logger = winston.createLogger({
@@ -96,7 +95,12 @@ export const readDirectionsFile = async (inputFilePath?: string): Promise<string
 
     logger.info(`Fetching input directions from ${inputFile}`)
 
-    return promisify(fs.readFile)(inputFile, "utf8")
+    try {
+        const content = await fs.readFile(inputFile, "utf8")
+        return content
+    } catch (error) {
+        throw new Error(`Unable to read file located at ${inputFile}`)
+    }
 }
 
 const run = async (inputFilePath?: string): Promise<Coordinate | undefined> => {
@@ -111,7 +115,7 @@ const run = async (inputFilePath?: string): Promise<Coordinate | undefined> => {
         logger.info(`The robot's final position is ${prettyPrint(position)}`)
         return position
     } catch (error) {
-        logger.error(error)
+        logger.error((error as Error).message || error)
         return undefined
     }
 }

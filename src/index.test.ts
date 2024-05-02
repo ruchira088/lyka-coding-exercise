@@ -39,6 +39,11 @@ test("Should read input directions file", async () => {
     expect(content).toStrictEqual("N E N E N E N E")
 })
 
+test("Should throw error for non-existing directions file", async () => {
+    await expect(async () => await readDirectionsFile("../test-data/non-existing-file.txt"))
+        .rejects.toThrow("Unable to read file located at ../test-data/non-existing-file.txt")
+})
+
 test("Should return whether the position is valid on the board", () => {
     const boardDimensions: WarehouseDimensions = {height: 10, width: 10}
     const isValid = isValidPosition(boardDimensions)
