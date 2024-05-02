@@ -1,8 +1,8 @@
 import winston, {Logger, transports} from "winston"
 import fs from "fs"
-import {Coordinate, Direction, WarehouseDimensions} from "./types"
 import path from "path"
 import {promisify} from "util"
+import {Coordinate, Direction, WarehouseDimensions} from "./types"
 
 const logger: Logger = winston.createLogger({
     level: "info",
@@ -52,6 +52,13 @@ export const parseDirections = (input: string): Direction[] => {
 export const parseDirection = (input: string): Direction | undefined =>
     Object.values(Direction).find(value => value === input)
 
+export const prettyDirection = (direction: Direction): string => {
+    const [word] =
+        Object.entries(Direction).find(([key, value]) => value === direction) as [string, Direction]
+
+    return word
+}
+
 const move = (startingPosition: Coordinate, positionValidator: (position: Coordinate) => boolean, directions: Direction[]): Coordinate => {
     const position: Coordinate = directions.reduce(
         (position, direction) => {
@@ -60,7 +67,7 @@ const move = (startingPosition: Coordinate, positionValidator: (position: Coordi
             if (positionValidator(next)) {
                 return next
             } else {
-                logger.warn(`Unable to move ${direction} from ${prettyPrint(position)}. Ignoring direction`)
+                logger.warn(`Unable to move ${prettyDirection(direction)} from ${prettyPrint(position)}. Ignoring direction`)
 
                 return position
             }
@@ -71,44 +78,43 @@ const move = (startingPosition: Coordinate, positionValidator: (position: Coordi
     return position
 }
 
-export const start = (startingPosition: Coordinate, warehouseDimensions: WarehouseDimensions, inputDirections: string): Coordinate | undefined => {
-    try {
-        const directions: Direction[] = parseDirections(inputDirections)
+export const start = (startingPosition: Coordinate, warehouseDimensions: WarehouseDimensions, inputDirections: string): Coordinate => {
+    const directions: Direction[] = parseDirections(inputDirections)
 
-        logger.debug(`Input directions: ${directions.join(", ")}`)
+    logger.debug(`Input directions: ${directions.join(", ")}`)
 
-        const positionValidator: (position: Coordinate) => boolean = isValidPosition(warehouseDimensions)
-        const finalPosition: Coordinate = move(startingPosition, positionValidator, directions)
-        return finalPosition
-    } catch (error) {
-        logger.error(error)
-        return undefined
-    }
+    const positionValidator: (position: Coordinate) => boolean = isValidPosition(warehouseDimensions)
+    const finalPosition: Coordinate = move(startingPosition, positionValidator, directions)
+
+    return finalPosition
 }
 
-const run = async (inputFilePath?: string) => {
-    const startingPosition: Coordinate = {x: 0, y: 0}
-    const warehouseDimensions: WarehouseDimensions = {height: 10, width: 10}
-
-    logger.info(`Starting position: ${prettyPrint(startingPosition)}, Warehouse dimensions: (height=${warehouseDimensions.height}, width=${warehouseDimensions.width})`)
-
+export const readDirectionsFile = async (inputFilePath?: string): Promise<string> => {
     const inputFile =
         (inputFilePath == undefined || inputFilePath.trim().length === 0) ?
             path.resolve(__dirname, "../input-directions.txt") : inputFilePath
 
     logger.info(`Fetching input directions from ${inputFile}`)
 
-    const content: string = await promisify(fs.readFile)(inputFile, "utf8")
+    return promisify(fs.readFile)(inputFile, "utf8")
+}
 
-    const position = start(startingPosition, warehouseDimensions, content)
+const run = async (inputFilePath?: string): Promise<Coordinate | undefined> => {
+    const startingPosition: Coordinate = {x: 0, y: 0}
+    const warehouseDimensions: WarehouseDimensions = {height: 10, width: 10}
 
-    if (position != undefined) {
+    logger.info(`Starting position: ${prettyPrint(startingPosition)}, Warehouse dimensions: (height=${warehouseDimensions.height}, width=${warehouseDimensions.width})`)
+
+    try {
+        const inputDirections: string = await readDirectionsFile(inputFilePath)
+        const position = start(startingPosition, warehouseDimensions, inputDirections)
         logger.info(`The robot's final position is ${prettyPrint(position)}`)
+        return position
+    } catch (error) {
+        logger.error(error)
+        return undefined
     }
 }
 
-
-
-console.log(process.argv[2])
-
-run()
+const inputFile: string | undefined = process.argv[2]
+run(inputFile)

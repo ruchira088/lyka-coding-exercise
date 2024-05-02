@@ -1,5 +1,6 @@
-import {isValidPosition, nextPosition, parseDirection, parseDirections} from "./index"
+import {isValidPosition, nextPosition, parseDirection, parseDirections, readDirectionsFile} from "./index"
 import {WarehouseDimensions, Coordinate, Direction} from "./types"
+import path from "path"
 
 test("Should go to the expected next position", () => {
     const position: Coordinate = {x: 0, y: 0}
@@ -31,6 +32,11 @@ describe("Parsing string of directions", () => {
     test("Should throw exception for an invalid directions", () => {
         expect(() => parseDirections("N E W S B")).toThrow(new Error("Invalid direction: B"))
     })
+})
+
+test("Should read input directions file", async () => {
+    const content = await readDirectionsFile(path.resolve(__dirname, "../test-data/directions.txt"))
+    expect(content).toStrictEqual("N E N E N E N E")
 })
 
 test("Should return whether the position is valid on the board", () => {
