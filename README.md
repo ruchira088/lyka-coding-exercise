@@ -1,6 +1,7 @@
 <img width="102" alt="lyka-logo" src="https://github.com/ruchira088/lyka-coding-exercise/assets/5546272/c025a767-3e8a-41d2-9edc-9915c71cf0d4">
 
 ## Lyka Coding Exercise 
+[![build-pipeline](https://github.com/ruchira088/lyka-coding-exercise/actions/workflows/build-pipeline.yml/badge.svg)](https://github.com/ruchira088/lyka-coding-exercise/actions/workflows/build-pipeline.yml)
 
 #### Requirements
 
