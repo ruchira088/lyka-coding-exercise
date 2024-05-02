@@ -25,14 +25,16 @@ If the robot starts in the south-west corner of the warehouse then the following
 
 ### How to run the program
 
+Ensure that you have **node.js** installed on your system.
+
 ```shell
 npm i
 npm start
 ```
 
-The robot instructions file is `input-directions.txt` located at the project's root directory
+The robot instructions file is named `input-directions.txt` which located at the project's root directory.
 
-You can override the location of the robot instructions file by passing the path of the file
+You can override the location of the robot instructions file by passing the path of the file,
 
 ```shell
 npm start /Users/ruchira/Development/lyka-coding-exercise/test-data/directions.txt
